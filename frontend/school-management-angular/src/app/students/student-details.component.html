@@ -1,0 +1,74 @@
+<main class="page">
+  <a class="back-link" routerLink="/students">
+    <span aria-hidden="true">←</span>
+    Back to Students
+  </a>
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">ACADEMIC RECORDS</p>
+      <h1>Student Details</h1>
+      <p class="subtitle">Student profile and enrollment information.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <section class="notice" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Loading student details…</span>
+    </section>
+  } @else if (notFound()) {
+    <section class="notice" role="status">
+      <div>
+        <h2>Student not found</h2>
+        <p>No student exists with that ID.</p>
+      </div>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="notice error" role="alert">{{ errorMessage() }}</section>
+  } @else if (student(); as currentStudent) {
+    <section class="details-card" aria-label="Student details">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">STUDENT PROFILE</p>
+          <h2>{{ currentStudent.firstName }} {{ currentStudent.lastName }}</h2>
+        </div>
+        <span class="status" [class.inactive]="!currentStudent.isActive">
+          <span class="status-dot" aria-hidden="true"></span>
+          {{ currentStudent.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+
+      <dl class="details-grid">
+        <div class="detail-item">
+          <dt>Student ID</dt>
+          <dd>{{ currentStudent.studentId }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>First Name</dt>
+          <dd>{{ currentStudent.firstName }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Last Name</dt>
+          <dd>{{ currentStudent.lastName }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Email</dt>
+          <dd class="email">{{ currentStudent.email }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Date of Birth</dt>
+          <dd>{{ currentStudent.dateOfBirth | date: 'longDate' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Enrollment Date</dt>
+          <dd>{{ currentStudent.enrollmentDate | date: 'longDate' }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Active Status</dt>
+          <dd>{{ currentStudent.isActive ? 'Active' : 'Inactive' }}</dd>
+        </div>
+      </dl>
+    </section>
+  }
+</main>

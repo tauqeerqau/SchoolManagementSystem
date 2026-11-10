@@ -1,0 +1,67 @@
+<main class="page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">ACADEMIC RECORDS</p>
+      <h1>Students</h1>
+      <p class="subtitle">View student enrollment and status information.</p>
+    </div>
+    <div class="header-actions">
+      @if (!loading() && !errorMessage()) {
+        <span class="record-count">{{ students().length }} records</span>
+      }
+      <a class="add-link" routerLink="/students/new">Add Student</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <section class="notice" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Loading students…</span>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="notice error" role="alert">{{ errorMessage() }}</section>
+  } @else if (students().length === 0) {
+    <section class="notice">No students found.</section>
+  } @else {
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">First name</th>
+              <th scope="col">Last name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Date of birth</th>
+              <th scope="col">Enrollment date</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (student of students(); track student.studentId) {
+              <tr>
+                <td class="id-cell">{{ student.studentId }}</td>
+                <td>{{ student.firstName }}</td>
+                <td>{{ student.lastName }}</td>
+                <td class="email-cell">{{ student.email }}</td>
+                <td>{{ student.dateOfBirth | date: 'mediumDate' }}</td>
+                <td>{{ student.enrollmentDate | date: 'mediumDate' }}</td>
+                <td>
+                  <span class="status" [class.inactive]="!student.isActive">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    {{ student.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <a class="view-link" [routerLink]="['/students', student.studentId]">View</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="footnote">Student records are loaded from the school management API.</p>
+  }
+</main>

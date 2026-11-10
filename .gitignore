@@ -1,0 +1,53 @@
+# .NET build output
+**/bin/
+**/obj/
+.dotnet-cli/
+
+# Visual Studio and IDE state
+.vs/
+**/*.csproj.user
+**/*.suo
+**/*.user
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Angular and Node
+**/node_modules/
+**/dist/
+**/.angular/cache/
+**/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local secrets and environment overrides
+**/secrets.json
+**/secrets.*.json
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.template
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+
+# OS and temporary files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Test and tooling output
+TestResults/
+artifacts/
+.sass-cache/
+.history/

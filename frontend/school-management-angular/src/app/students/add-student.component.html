@@ -1,0 +1,119 @@
+<main class="page">
+  <a class="back-link" routerLink="/students">
+    <span aria-hidden="true">←</span>
+    Back to Students
+  </a>
+
+  <header class="page-header">
+    <p class="eyebrow">ACADEMIC RECORDS</p>
+    <h1>Add Student</h1>
+    <p class="subtitle">Enter the student's details to add a new record.</p>
+  </header>
+
+  @if (successMessage()) {
+    <section class="notice success" role="status">{{ successMessage() }}</section>
+  } @else {
+    @if (errorMessage()) {
+      <section class="notice error" role="alert">{{ errorMessage() }}</section>
+    }
+
+    <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label for="firstName">First Name</label>
+          <input id="firstName" type="text" formControlName="firstName" autocomplete="given-name"
+            [attr.aria-invalid]="form.controls.firstName.invalid && (form.controls.firstName.touched || submitted())"
+            aria-describedby="firstName-error" />
+          @if (form.controls.firstName.invalid && (form.controls.firstName.touched || submitted())) {
+            <p class="field-error" id="firstName-error">
+              @if (form.controls.firstName.hasError('required') || form.controls.firstName.hasError('pattern')) {
+                First name is required.
+              } @else {
+                First name must be 100 characters or fewer.
+              }
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input id="lastName" type="text" formControlName="lastName" autocomplete="family-name"
+            [attr.aria-invalid]="form.controls.lastName.invalid && (form.controls.lastName.touched || submitted())"
+            aria-describedby="lastName-error" />
+          @if (form.controls.lastName.invalid && (form.controls.lastName.touched || submitted())) {
+            <p class="field-error" id="lastName-error">
+              @if (form.controls.lastName.hasError('required') || form.controls.lastName.hasError('pattern')) {
+                Last name is required.
+              } @else {
+                Last name must be 100 characters or fewer.
+              }
+            </p>
+          }
+        </div>
+
+        <div class="field field-wide">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" autocomplete="email"
+            [attr.aria-invalid]="form.controls.email.invalid && (form.controls.email.touched || submitted())"
+            aria-describedby="email-error" />
+          @if (form.controls.email.invalid && (form.controls.email.touched || submitted())) {
+            <p class="field-error" id="email-error">
+              @if (form.controls.email.hasError('required')) {
+                Email is required.
+              } @else if (form.controls.email.hasError('email')) {
+                Enter a valid email address.
+              } @else {
+                Email must be 256 characters or fewer.
+              }
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="dateOfBirth">Date of Birth</label>
+          <input id="dateOfBirth" type="date" formControlName="dateOfBirth"
+            [attr.aria-invalid]="form.controls.dateOfBirth.invalid && (form.controls.dateOfBirth.touched || submitted())"
+            aria-describedby="dateOfBirth-error" />
+          @if (form.controls.dateOfBirth.invalid && (form.controls.dateOfBirth.touched || submitted())) {
+            <p class="field-error" id="dateOfBirth-error">Date of birth is required.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="enrollmentDate">Enrollment Date</label>
+          <input id="enrollmentDate" type="date" formControlName="enrollmentDate"
+            [attr.aria-invalid]="form.controls.enrollmentDate.invalid && (form.controls.enrollmentDate.touched || submitted())"
+            aria-describedby="enrollmentDate-error" />
+          @if (form.controls.enrollmentDate.invalid && (form.controls.enrollmentDate.touched || submitted())) {
+            <p class="field-error" id="enrollmentDate-error">Enrollment date is required.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="isActive">Active Status</label>
+          <select id="isActive" formControlName="isActive"
+            [attr.aria-invalid]="form.controls.isActive.invalid && (form.controls.isActive.touched || submitted())"
+            aria-describedby="isActive-error">
+            <option value="" disabled>Select a status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+          @if (form.controls.isActive.invalid && (form.controls.isActive.touched || submitted())) {
+            <p class="field-error" id="isActive-error">Select an active status.</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a class="cancel-button" routerLink="/students">Cancel</a>
+        <button class="save-button" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            Saving…
+          } @else {
+            Save Student
+          }
+        </button>
+      </div>
+    </form>
+  }
+</main>
