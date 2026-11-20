@@ -11,6 +11,17 @@ public sealed class SchoolManagementDbContext(
 {
     public DbSet<Student> Students => Set<Student>();
 
+    public DbSet<SchoolClass> Classes => Set<SchoolClass>();
+
+    public DbSet<Course> Courses => Set<Course>();
+
+    public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+
+    public DbSet<Teacher> Teachers => Set<Teacher>();
+
+    public DbSet<TeacherCourseAssignment> TeacherCourseAssignments =>
+        Set<TeacherCourseAssignment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

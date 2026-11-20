@@ -109,6 +109,80 @@ public sealed class StudentsApiTests
     }
 
     [Fact]
+    public async Task ClassHasManyStudents_AndDeletingClassDoesNotDeleteStudents()
+    {
+        using var factory = new SchoolManagementApiFactory();
+        await TestDatabaseInitializer.InitializeAsync(factory);
+        await using var scope = factory.Services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<SchoolManagementDbContext>();
+        var schoolClass = new SchoolClass { Name = $"Class {Guid.NewGuid():N}" };
+        var students = new[]
+        {
+            CreateStudent(schoolClass, "first"),
+            CreateStudent(schoolClass, "second")
+        };
+
+        try
+        {
+            dbContext.Classes.Add(schoolClass);
+            dbContext.Students.AddRange(students);
+            TestDatabaseSafety.EnsureSafeConnectionString(
+                dbContext.Database.GetDbConnection().ConnectionString);
+            await dbContext.SaveChangesAsync();
+
+            var relatedStudents = await dbContext.Students
+                .AsNoTracking()
+                .Where(student => student.ClassId == schoolClass.ClassId)
+                .Include(student => student.SchoolClass)
+                .ToListAsync();
+
+            Assert.Equal(2, relatedStudents.Count);
+            Assert.All(relatedStudents, student =>
+            {
+                Assert.Equal(schoolClass.ClassId, student.ClassId);
+                Assert.Equal(schoolClass.Name, student.SchoolClass?.Name);
+            });
+
+            await using (var deleteScope = factory.Services.CreateAsyncScope())
+            {
+                var deleteContext = deleteScope.ServiceProvider
+                    .GetRequiredService<SchoolManagementDbContext>();
+                var classToDelete = await deleteContext.Classes
+                    .SingleAsync(item => item.ClassId == schoolClass.ClassId);
+                deleteContext.Classes.Remove(classToDelete);
+                TestDatabaseSafety.EnsureSafeConnectionString(
+                    deleteContext.Database.GetDbConnection().ConnectionString);
+
+                await Assert.ThrowsAsync<DbUpdateException>(
+                    () => deleteContext.SaveChangesAsync());
+            }
+
+            await using (var verifyScope = factory.Services.CreateAsyncScope())
+            {
+                var verifyContext = verifyScope.ServiceProvider
+                    .GetRequiredService<SchoolManagementDbContext>();
+                var studentIds = students.Select(student => student.StudentId).ToArray();
+                var remainingStudents = await verifyContext.Students
+                    .AsNoTracking()
+                    .Where(student => studentIds.Contains(student.StudentId))
+                    .ToListAsync();
+
+                Assert.Equal(2, remainingStudents.Count);
+                Assert.All(remainingStudents, student =>
+                    Assert.Equal(schoolClass.ClassId, student.ClassId));
+            }
+        }
+        finally
+        {
+            dbContext.Students.RemoveRange(students);
+            dbContext.Classes.Remove(schoolClass);
+            TestDatabaseSafety.EnsureSafeConnectionString(
+                dbContext.Database.GetDbConnection().ConnectionString);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    [Fact]
     public async Task Create_WhenRequestIsValid_ReturnsCreatedResource()
     {
         using var factory = new SchoolManagementApiFactory();
@@ -246,6 +320,17 @@ public sealed class StudentsApiTests
             IsActive = true
         };
     }
+
+    private static Student CreateStudent(SchoolClass schoolClass, string identifier) => new()
+    {
+        FirstName = "Test",
+        LastName = "Student",
+        Email = $"{identifier}.{Guid.NewGuid():N}@example.com",
+        DateOfBirth = new DateTime(2008, 6, 12),
+        EnrollmentDate = new DateTime(2025, 9, 1),
+        IsActive = true,
+        SchoolClass = schoolClass
+    };
 
     private static string CreateUniqueEmail(string scenario)
     {

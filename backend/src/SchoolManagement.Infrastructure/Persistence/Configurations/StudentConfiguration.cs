@@ -35,5 +35,11 @@ public sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
 
         builder.Property(student => student.IsActive)
             .IsRequired();
+
+        builder.HasOne(student => student.SchoolClass)
+            .WithMany(schoolClass => schoolClass.Students)
+            .HasForeignKey(student => student.ClassId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

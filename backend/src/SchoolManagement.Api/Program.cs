@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 const string AngularDevelopment = "AngularDevelopment";
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<RegisterStudent>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

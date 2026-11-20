@@ -16,7 +16,6 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddScoped<IStudentStore, StudentStore>();
-        services.AddScoped<IStudentService, StudentService>();
 
         services.AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole>()
