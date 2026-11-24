@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\src\SchoolManagement.Domain\SchoolManagement.Domain.csproj" />
     <ProjectReference Include="..\..\src\SchoolManagement.Application\SchoolManagement.Application.csproj" />
     <ProjectReference Include="..\..\src\SchoolManagement.Infrastructure\SchoolManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\SchoolManagement.Api\SchoolManagement.Api.csproj" />
   </ItemGroup>
 
 </Project>

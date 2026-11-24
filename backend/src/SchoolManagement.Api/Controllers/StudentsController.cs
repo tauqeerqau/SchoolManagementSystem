@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Application.Students;
 
@@ -9,6 +10,7 @@ public sealed class StudentsController(
     IStudentService studentService) : ControllerBase
 {
     [HttpGet]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<ActionResult<IReadOnlyList<StudentDto>>> GetAll(
         CancellationToken cancellationToken)
     {
@@ -17,6 +19,7 @@ public sealed class StudentsController(
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<ActionResult<StudentDto>> GetById(
         int id,
         CancellationToken cancellationToken)
@@ -36,31 +39,21 @@ public sealed class StudentsController(
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StudentDto>> Create(
         StudentCreateRequest request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var student = await studentService.CreateAsync(request, cancellationToken);
+        var student = await studentService.CreateAsync(request, cancellationToken);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = student.StudentId },
-                student);
-        }
-        catch (DuplicateStudentEmailException)
-        {
-            return Conflict(new ProblemDetails
-            {
-                Status = StatusCodes.Status409Conflict,
-                Title = "Email already in use.",
-                Detail = "A student with this email address already exists."
-            });
-        }
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = student.StudentId },
+            student);
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StudentDto>> Update(
         int id,
         StudentUpdateRequest request,
@@ -75,27 +68,16 @@ public sealed class StudentsController(
             });
         }
 
-        try
-        {
-            var student = await studentService.UpdateAsync(
-                id,
-                request,
-                cancellationToken);
+        var student = await studentService.UpdateAsync(
+            id,
+            request,
+            cancellationToken);
 
-            return student is null ? NotFound() : Ok(student);
-        }
-        catch (DuplicateStudentEmailException)
-        {
-            return Conflict(new ProblemDetails
-            {
-                Status = StatusCodes.Status409Conflict,
-                Title = "Email already in use.",
-                Detail = "A student with this email address already exists."
-            });
-        }
+        return student is null ? NotFound() : Ok(student);
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(
         int id,
         CancellationToken cancellationToken)

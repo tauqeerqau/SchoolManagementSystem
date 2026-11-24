@@ -18,7 +18,7 @@ public sealed class StudentsApiTests
         using var factory = new SchoolManagementApiFactory();
         await TestDatabaseInitializer.InitializeAsync(factory);
 
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
         using var response = await client.GetAsync("/api/students");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -56,7 +56,7 @@ public sealed class StudentsApiTests
 
         try
         {
-            using var client = factory.CreateClient();
+            using var client = factory.CreateAuthenticatedClient();
             using var response = await client.GetAsync($"/api/students/{student.StudentId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -102,7 +102,7 @@ public sealed class StudentsApiTests
             nonexistentStudentId = Random.Shared.Next(1, int.MaxValue);
         }
 
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
         using var response = await client.GetAsync($"/api/students/{nonexistentStudentId}");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -193,7 +193,7 @@ public sealed class StudentsApiTests
 
         try
         {
-            using var client = factory.CreateClient();
+            using var client = factory.CreateAuthenticatedClient();
             await ValidateTestDatabaseConnectionStringAsync(factory);
             using var response = await client.PostAsJsonAsync("/api/students", request);
 
@@ -241,7 +241,7 @@ public sealed class StudentsApiTests
         using var factory = new SchoolManagementApiFactory();
         await TestDatabaseInitializer.InitializeAsync(factory);
 
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
         await ValidateTestDatabaseConnectionStringAsync(factory);
         using var response = await client.PostAsJsonAsync("/api/students", new { });
 
@@ -263,7 +263,7 @@ public sealed class StudentsApiTests
         await TestDatabaseInitializer.InitializeAsync(factory);
 
         var request = CreateValidRequest("not-an-email-address");
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
         await ValidateTestDatabaseConnectionStringAsync(factory);
         using var response = await client.PostAsJsonAsync("/api/students", request);
 
@@ -285,7 +285,7 @@ public sealed class StudentsApiTests
 
         try
         {
-            using var client = factory.CreateClient();
+            using var client = factory.CreateAuthenticatedClient();
             await ValidateTestDatabaseConnectionStringAsync(factory);
             using var firstResponse = await client.PostAsJsonAsync("/api/students", request);
             Assert.Equal(HttpStatusCode.Created, firstResponse.StatusCode);

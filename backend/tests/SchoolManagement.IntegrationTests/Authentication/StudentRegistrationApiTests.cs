@@ -125,15 +125,17 @@ public sealed class StudentRegistrationApiTests
         Assert.DoesNotContain("already registered", json, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
-    public async Task PostRegister_CannotSelectAdminRoleFromRequest()
+    [Theory]
+    [InlineData("Admin")]
+    [InlineData("Teacher")]
+    public async Task PostRegister_CannotSelectPrivilegedRoleFromRequest(string role)
     {
         var registration = new FakeStudentAccountRegistration(
             StudentAccountRegistrationResult.Created("student-user-42"));
         using var factory = CreateFactory(registration);
         using var client = factory.CreateClient();
         var request = ValidRequest();
-        request["Role"] = "Admin";
+        request["Role"] = role;
 
         var response = await client.PostAsJsonAsync("/api/auth/register", request);
 

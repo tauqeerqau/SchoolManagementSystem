@@ -26,6 +26,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IStudentAccountRegistration, StudentAccountRegistration>();
+        services.AddScoped<IUserAuthenticator, IdentityUserAuthenticator>();
         services.AddScoped<IIdentityRoleProvisioner, IdentityRoleProvisioner>();
 
         services.AddDbContext<SchoolManagementDbContext>(options =>

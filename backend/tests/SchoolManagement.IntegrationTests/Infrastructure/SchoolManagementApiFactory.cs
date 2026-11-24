@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http.Headers;
+using SchoolManagement.Api.Authentication;
 
 namespace SchoolManagement.IntegrationTests.Infrastructure;
 
@@ -15,6 +18,20 @@ public sealed class SchoolManagementApiFactory : WebApplicationFactory<global::P
         TestDatabaseSafety.EnsureSafeConnectionString(TestConnectionString);
     }
 
+    public HttpClient CreateAuthenticatedClient()
+    {
+        var client = CreateClient();
+        var token = Services.GetRequiredService<IAccessTokenGenerator>().Generate(
+            "integration-student",
+            "integration.student@example.com",
+            "Integration",
+            "Student",
+            ["Student"]);
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token.Token);
+        return client;
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
@@ -23,7 +40,8 @@ public sealed class SchoolManagementApiFactory : WebApplicationFactory<global::P
             configuration.AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {
-                    ["ConnectionStrings:SchoolManagementDatabase"] = TestConnectionString
+                    ["ConnectionStrings:SchoolManagementDatabase"] = TestConnectionString,
+                    ["Jwt:SigningKey"] = "integration-test-signing-key-with-at-least-32-bytes"
                 });
         });
     }

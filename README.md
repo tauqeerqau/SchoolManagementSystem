@@ -96,6 +96,10 @@ dotnet user-secrets set "ConnectionStrings:SchoolManagementDatabase" "<local con
 
 The API reads `ConnectionStrings:SchoolManagementDatabase`. Do not commit real connection strings or signing keys.
 
+### Identity role provisioning
+
+Public registration creates Student accounts only. Admin and Teacher roles must be assigned to users through a trusted, access-controlled provisioning process before those roles are used in production. Role-record provisioning at startup does not create privileged users or assign roles.
+
 Run the API with:
 
 ```bash
